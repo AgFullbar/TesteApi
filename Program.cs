@@ -1,5 +1,4 @@
 using ApiTeste.Data;
-using ApiTeste.Data;
 using ApiTeste.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ builder.Services.AddScoped<ICompraService, CompraService>();
 
 var app = builder.Build();
 
-// Criar banco automaticamente (opcional, mas ótimo para teste)
+// Criar banco automaticamente (opcional, mas Ã³timo para teste)
 //using (var scope = app.Services.CreateScope())
 //{
 //    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -40,6 +39,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Front simulador (wwwroot/index.html)
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseAuthorization();
 app.MapControllers();
 

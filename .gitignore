@@ -22,3 +22,6 @@ obj/
 ## OS
 Thumbs.db
 .DS_Store
+
+## Banco do teste (precisa ir no fork)
+!Database/app.db
