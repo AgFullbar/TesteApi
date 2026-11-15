@@ -57,4 +57,23 @@ public class CompraService : ICompraService
             .OrderByDescending(c => c.DataCadastro)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<List<RelatorioCompraDto>> GerarRelatorioAsync()
+    {
+        return await _context.Compras
+            .AsNoTracking()
+            .OrderByDescending(c => c.DataCadastro)
+            .Select(c => new RelatorioCompraDto
+            {
+                CompraId = c.Id,
+                DataCompra = c.DataCadastro,
+                UsuarioId = c.UsuarioId,
+                UsuarioNome = c.Usuario.Nome,
+                UsuarioEmail = c.Usuario.Email,
+                ProdutoId = c.ProdutoId,
+                ProdutoNome = c.Produto.Nome,
+                ProdutoDescricao = c.Produto.Descricao
+            })
+            .ToListAsync();
+    }
 }
