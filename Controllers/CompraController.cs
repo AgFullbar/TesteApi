@@ -59,7 +59,7 @@ public class ComprasController : ControllerBase
     {
         try
         {
-            Compra compra = await _service.ListarUltimaAsync();
+            Compra? compra = await _service.ListarUltimaAsync();
 
             if (compra == null)
             {
