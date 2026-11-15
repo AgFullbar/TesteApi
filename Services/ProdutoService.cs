@@ -28,6 +28,8 @@ public class ProdutoService : IProdutoService
 
     public async Task<List<Produto>> ListarAsync()
     {
-        return await _context.Produtos.ToListAsync();
+        return await _context.Produtos
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

@@ -37,6 +37,8 @@ namespace ApiTeste.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DataCadastro");
+
                     b.HasIndex("ProdutoId");
 
                     b.HasIndex("UsuarioId");

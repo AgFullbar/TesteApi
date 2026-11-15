@@ -28,11 +28,11 @@ builder.Services.AddScoped<ICompraService, CompraService>();
 var app = builder.Build();
 
 // Criar banco automaticamente (opcional, mas ótimo para teste)
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    db.Database.Migrate();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Swagger
 if (app.Environment.IsDevelopment())
