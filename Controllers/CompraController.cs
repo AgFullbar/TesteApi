@@ -1,4 +1,5 @@
-﻿using ApiTeste.Domain;
+﻿using System.Text;
+using ApiTeste.Domain;
 using ApiTeste.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -59,7 +60,7 @@ public class ComprasController : ControllerBase
     {
         try
         {
-            Compra compra = await _service.ListarUltimaAsync();
+            Compra? compra = await _service.ListarUltimaAsync();
 
             if (compra == null)
             {
@@ -77,5 +78,74 @@ public class ComprasController : ControllerBase
                 ex.Message
             ));
         }
+    }
+
+    [HttpGet("relatorio")]
+    public async Task<IActionResult> Relatorio()
+    {
+        try
+        {
+            List<RelatorioCompraDto> relatorio = await _service.GerarRelatorioAsync();
+            return Ok(relatorio);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ErrorResponse(
+                "Erro ao gerar relatório",
+                ex.Message
+            ));
+        }
+    }
+
+    [HttpGet("relatorio/csv")]
+    public async Task<IActionResult> RelatorioCsv()
+    {
+        try
+        {
+            List<RelatorioCompraDto> relatorio = await _service.GerarRelatorioAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("CompraId;DataCompra;UsuarioId;UsuarioNome;UsuarioEmail;ProdutoId;ProdutoNome;ProdutoDescricao");
+
+            foreach (RelatorioCompraDto item in relatorio)
+            {
+                sb.AppendLine(string.Join(";",
+                    item.CompraId,
+                    item.DataCompra.ToString("yyyy-MM-dd HH:mm:ss"),
+                    item.UsuarioId,
+                    EscaparCsv(item.UsuarioNome),
+                    EscaparCsv(item.UsuarioEmail),
+                    item.ProdutoId,
+                    EscaparCsv(item.ProdutoNome),
+                    EscaparCsv(item.ProdutoDescricao)
+                ));
+            }
+
+            byte[] bom = Encoding.UTF8.GetPreamble();
+            byte[] conteudo = Encoding.UTF8.GetBytes(sb.ToString());
+            byte[] arquivo = new byte[bom.Length + conteudo.Length];
+            Buffer.BlockCopy(bom, 0, arquivo, 0, bom.Length);
+            Buffer.BlockCopy(conteudo, 0, arquivo, bom.Length, conteudo.Length);
+
+            return File(arquivo, "text/csv", "relatorio-compras.csv");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new ErrorResponse(
+                "Erro ao exportar relatório CSV",
+                ex.Message
+            ));
+        }
+    }
+
+    private static string EscaparCsv(string? valor)
+    {
+        valor ??= string.Empty;
+        if (valor.Contains(';') || valor.Contains('"') || valor.Contains('\n'))
+        {
+            return "\"" + valor.Replace("\"", "\"\"") + "\"";
+        }
+
+        return valor;
     }
 }

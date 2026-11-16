@@ -6,5 +6,7 @@ namespace ApiTeste.Services.Interfaces
     {
         Task<Compra> CriarAsync(CriarCompraDto dto);
         Task<List<Compra>> ListarAsync();
+        Task<Compra?> ListarUltimaAsync();
+        Task<List<RelatorioCompraDto>> GerarRelatorioAsync();
     }
 }

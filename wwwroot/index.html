@@ -51,6 +51,8 @@
     <button onclick="call('POST',v('cRota'),{usuarioId:+v('cUsuarioId'),produtoId:+v('cProdutoId')},'cOut')">Criar</button>
     <button class="sec" onclick="call('GET',v('cRota'),null,'cOut')">Listar</button>
     <button class="sec" onclick="call('GET',v('cUltima'),null,'cOut')">Última compra</button>
+    <button class="sec" onclick="call('GET',v('cRota') + '/relatorio',null,'cOut')">Relatório JSON</button>
+    <button class="sec" onclick="exportarCsv()">Exportar CSV</button>
     <div class="st" id="cOutSt"></div><pre id="cOut"></pre>
   </section>
 </main>
@@ -66,6 +68,27 @@
       st.textContent = method + ' ' + url + ' -> ' + r.status + ' ' + r.statusText + ' (' + Math.round(performance.now() - t0) + ' ms)';
       st.className = 'st ' + (r.ok ? 'ok' : 'err');
       try { pre.textContent = JSON.stringify(JSON.parse(txt), null, 2); } catch { pre.textContent = txt || '(sem conteúdo)'; }
+    } catch (e) { st.textContent = 'Falha: ' + e.message; st.className = 'st err'; }
+  }
+  async function exportarCsv() {
+    const st = document.getElementById('cOutSt'), pre = document.getElementById('cOut');
+    const url = v('cRota') + '/relatorio/csv';
+    st.textContent = 'GET ' + url + ' ...'; st.className = 'st';
+    try {
+      const r = await fetch(url);
+      if (!r.ok) {
+        st.textContent = 'GET ' + url + ' -> ' + r.status; st.className = 'st err';
+        pre.textContent = await r.text();
+        return;
+      }
+      const blob = await r.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'relatorio-compras.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      st.textContent = 'GET ' + url + ' -> ' + r.status + ' (download CSV)'; st.className = 'st ok';
+      pre.textContent = 'Arquivo relatorio-compras.csv baixado.';
     } catch (e) { st.textContent = 'Falha: ' + e.message; st.className = 'st err'; }
   }
 </script>

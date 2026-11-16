@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Controllers tradicionais
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -25,11 +28,11 @@ builder.Services.AddScoped<ICompraService, CompraService>();
 var app = builder.Build();
 
 // Criar banco automaticamente (opcional, mas ótimo para teste)
-//using (var scope = app.Services.CreateScope())
-//{
-//    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    db.Database.Migrate();
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 // Swagger
 if (app.Environment.IsDevelopment())

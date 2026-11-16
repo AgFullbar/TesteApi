@@ -26,6 +26,9 @@ namespace ApiTeste.Data
                 .HasOne(c => c.Produto)
                 .WithMany(p => p.Compras)
                 .HasForeignKey(c => c.ProdutoId);
+
+            modelBuilder.Entity<Compra>()
+                .HasIndex(c => c.DataCadastro);
         }
     }
 }

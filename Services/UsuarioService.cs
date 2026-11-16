@@ -29,6 +29,8 @@ public class UsuarioService : IUsuarioService
 
     public async Task<List<Usuario>> ListarAsync()
     {
-        return await _context.Usuarios.ToListAsync();
+        return await _context.Usuarios
+            .AsNoTracking()
+            .ToListAsync();
     }
 }
